@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { User } from '../entities/user.entity';
@@ -50,7 +50,7 @@ export class AuthService {
     const exist = !!user;
 
     if (!exist) {
-      throw new BadRequestException(
+      throw new NotFoundException(
         'No se encontró al usuario con el UUID proporcionado.',
         'auth/user-not-found',
       );

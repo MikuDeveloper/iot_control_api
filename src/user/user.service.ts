@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UseGuards } from '@nestjs/common';
+import { BadRequestException, Injectable, NotAcceptableException, NotFoundException, UseGuards } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
@@ -55,7 +55,7 @@ export class UserService {
 
     for (const key in data) {
       if (!user.hasOwnProperty(key)) {
-        throw new BadRequestException(
+        throw new NotAcceptableException(
           `El campo '${key}' no es válido.`,
           'validation/invalid-field',
         );
@@ -63,14 +63,14 @@ export class UserService {
     }
 
     if ('email' in data) {
-      throw new BadRequestException(
+      throw new NotAcceptableException(
         `El campo 'email' no es válido en este contexto.`,
         'validation/invalid-field',
       );
     }
 
     if ('password' in data) {
-      throw new BadRequestException(
+      throw new NotAcceptableException(
         `El campo 'password' no es válido en este contexto.`,
         'validation/invalid-field',
       );
@@ -90,7 +90,7 @@ export class UserService {
   private async validateExist(uuid: string) {
     const user = await this.userRepository.findOneBy({ uuid });
     if (!user) {
-      throw new BadRequestException(
+      throw new NotFoundException(
         'No se encontró al usuario con el UUID proporcionado.',
         'auth/user-not-found',
       );
@@ -101,7 +101,7 @@ export class UserService {
   private async validateExistEmail(email: string) {
     const user = await this.userRepository.findOneBy({ email });
     if (!user) {
-      throw new BadRequestException(
+      throw new NotFoundException(
         'No se encontró al usuario con el correo electrónico proporcionado.',
         'auth/user-not-found',
       );
