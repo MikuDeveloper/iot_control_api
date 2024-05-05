@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -25,7 +26,9 @@ import { JwtModule } from '@nestjs/jwt';
       synchronize: false,
     }),
     UserModule,
-    AuthModule
+    AuthModule,
+    NotificationModule,
+    NotificationModule
   ],
   controllers: [AppController],
   providers: [AppService],
