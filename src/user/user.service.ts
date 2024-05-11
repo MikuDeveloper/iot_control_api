@@ -62,12 +62,6 @@ export class UserService {
       }
     }
 
-    if ('notificationtoken' in data) {
-      if (data.notificationtoken === '') {
-        data.notificationtoken = null;
-      }
-    }
-
     if ('email' in data) {
       throw new NotAcceptableException(
         `El campo 'email' no es válido en este contexto.`,

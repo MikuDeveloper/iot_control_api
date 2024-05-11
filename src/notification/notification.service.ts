@@ -1,19 +1,61 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { messaging } from 'firebase-admin';
-import { UserService } from '../user/user.service';
 import Message = messaging.Message;
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { NotificationEntity } from '../entities/notification.entity';
+import { NotificationStructEntity } from "../entities/notification-struct.entity";
 
 @Injectable()
 export class NotificationService {
-  constructor(private userService: UserService) {}
+  constructor(
+    @InjectRepository(NotificationEntity)
+    private readonly notificationRepository: Repository<NotificationEntity>,
+  ) {}
 
-  async sendNotification(uuid: string) {
-    const user = await this.userService.findOne(uuid);
+  async registerOrUpdate(register: NotificationEntity): Promise<string> {
+    await this.notificationRepository.save(register);
+    return 'Registro a notificaciones realizado con éxito.';
+  }
 
-    const message: Message = {
+  async findRegister(uuid: string) {
+    return await this.notificationRepository.findOneBy({ uuid });
+  }
+
+  async deleteRegister(uuid: string): Promise<string> {
+    const register = await this.findRegister(uuid);
+
+    if (!register) {
+      throw new NotFoundException(
+        'No se encontró el registro especificado.',
+        'notification/register-not-found'
+      )
+    }
+
+    await this.notificationRepository.delete(register.uuid);
+    return `Registro a notificaciones eliminado para: ${register.uuid}`
+  }
+
+  async sendNotification(uuid: string, struct: NotificationStructEntity): Promise<string> {
+    const register = await this.findRegister(uuid);
+
+    if (!register) {
+      throw new NotFoundException(
+        'No se encontró el registro especificado.',
+        'notification/register-not-found'
+      )
+    }
+
+    const notification: Message = this.createNotification(register.token, struct.title, struct.body);
+
+    return await messaging().send(notification);
+  }
+
+  private createNotification(token: string, title: string, body: string): Message {
+    return {
       notification: {
-        title: 'Notificación Miku',
-        body: 'Recibiste una notificación del servidor Miku :D',
+        title: title,
+        body: body,
         imageUrl: "https://firebasestorage.googleapis.com/v0/b/iot-control-e9084.appspot.com/o/notification.png?alt=media&token=831ebc06-fcd8-4c97-8253-02e6a3e9ef9d",
       },
       android: {
@@ -32,15 +74,8 @@ export class NotificationService {
           imageUrl: "https://firebasestorage.googleapis.com/v0/b/iot-control-e9084.appspot.com/o/notification.png?alt=media&token=831ebc06-fcd8-4c97-8253-02e6a3e9ef9d",
         }
       },
-      token: user.notificationtoken,
+      token: token,
     };
-
-    await messaging().send(message)
-      .then((response) => {
-        console.log('Notificación enviada exitosamente:', response);
-      })
-      .catch((error) => {
-        console.log('Error al enviar la notificación:', error);
-      });
   }
+
 }

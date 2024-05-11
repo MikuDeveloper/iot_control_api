@@ -30,7 +30,4 @@ export class User {
   @Column()
   @IsNotEmpty()
   role: string;
-
-  @Column({ nullable: true })
-  notificationtoken: string
 }
