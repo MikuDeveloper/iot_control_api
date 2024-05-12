@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { NotificationModule } from './notification/notification.module';
 import { ClientModule } from './client/client.module';
+import { TruckModule } from './truck/truck.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { ClientModule } from './client/client.module';
     UserModule,
     AuthModule,
     NotificationModule,
-    ClientModule
+    ClientModule,
+    TruckModule
   ],
   controllers: [AppController],
   providers: [AppService],
