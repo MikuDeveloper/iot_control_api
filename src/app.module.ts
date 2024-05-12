@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { NotificationModule } from './notification/notification.module';
+import { ClientModule } from './client/client.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { NotificationModule } from './notification/notification.module';
     }),
     UserModule,
     AuthModule,
-    NotificationModule
+    NotificationModule,
+    ClientModule
   ],
   controllers: [AppController],
   providers: [AppService],

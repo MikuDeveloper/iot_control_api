@@ -48,7 +48,14 @@ export class NotificationService {
 
     const notification: Message = this.createNotification(register.token, struct.title, struct.body);
 
-    return await messaging().send(notification);
+    try {
+      return await messaging().send(notification);
+    } catch (_) {
+      throw new NotFoundException(
+        'El token registrado ya no se encuentra disponible para recibir notificaciones.',
+        'notification/client-not-found'
+      )
+    }
   }
 
   private createNotification(token: string, title: string, body: string): Message {
