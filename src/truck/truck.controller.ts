@@ -15,7 +15,7 @@ export class TruckController {
 
   @UseGuards(AuthorizationGuard)
   @Get(':id')
-  async getOneTruck(@Param('id') id: number) {
+  async getOneTruck(@Param('id') id: string) {
     return await this.truckService.findOneById(id);
   }
 
@@ -39,7 +39,7 @@ export class TruckController {
 
   @UseGuards(AuthorizationGuard)
   @Delete(':id')
-  async delete(@Param('id') id: number) {
+  async delete(@Param('id') id: string) {
     return await this.truckService.delete(id);
   }
 }

@@ -27,7 +27,7 @@ export class TruckService {
     return truck;
   }
 
-  async findOneById(id: number): Promise<TruckEntity> {
+  async findOneById(id: string): Promise<TruckEntity> {
     const truck = await this.truckRepository.findOneBy({ id });
 
     if (!truck) {
@@ -44,7 +44,7 @@ export class TruckService {
     return await this.truckRepository.save(truck);
   }
 
-  async delete(id: number): Promise<string> {
+  async delete(id: string): Promise<string> {
     const truck = await this.truckRepository.findOneBy({ id });
 
     if (!truck) {

@@ -1,12 +1,14 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { IsJSON, IsNotEmpty, IsString, IsUUID } from "class-validator";
+import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { IsJSON, IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
 @Entity("trucks")
 export class TruckEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  @IsNotEmpty()
+  @IsString()
+  id: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true })
   @IsUUID()
   operator: string;
 
