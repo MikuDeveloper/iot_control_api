@@ -32,6 +32,19 @@ export class UserService {
     return usersData;
   }
 
+  async findAllOperators() {
+    const users = await this.userRepository.findBy({ role: 'O' });
+    const usersData: Omit<User, 'password'>[] = [];
+
+    for (const user of users) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...result } = user;
+      usersData.push(result);
+    }
+
+    return usersData;
+  }
+
   @UseGuards(AuthorizationGuard)
   async findOne(uuid: string) {
     const user = await this.validateExist(uuid);

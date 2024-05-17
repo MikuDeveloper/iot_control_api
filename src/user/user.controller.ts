@@ -19,6 +19,12 @@ export class UserController {
   }
 
   @UseGuards(AuthorizationGuard)
+  @Get('operators')
+  getOperators() {
+    return this.usersService.findAllOperators();
+  }
+
+  @UseGuards(AuthorizationGuard)
   @Get(':uuid')
   getUserByEmail(@Param('uuid') uuid: string) {
     return this.usersService.findOne(uuid);
