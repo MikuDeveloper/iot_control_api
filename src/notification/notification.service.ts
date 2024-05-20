@@ -4,13 +4,16 @@ import Message = messaging.Message;
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NotificationEntity } from '../entities/notification.entity';
-import { NotificationStructEntity } from "../entities/notification-struct.entity";
+import { NotificationStructEntity } from '../entities/notification-struct.entity';
+import { TruckEntity } from '../entities/truck.entity';
 
 @Injectable()
 export class NotificationService {
   constructor(
     @InjectRepository(NotificationEntity)
     private readonly notificationRepository: Repository<NotificationEntity>,
+    @InjectRepository(TruckEntity)
+    private readonly trucksRepository: Repository<TruckEntity>,
   ) {}
 
   async registerOrUpdate(register: NotificationEntity): Promise<string> {
@@ -55,6 +58,39 @@ export class NotificationService {
         'El token registrado ya no se encuentra disponible para recibir notificaciones.',
         'notification/client-not-found'
       )
+    }
+  }
+
+  async sendFromTruck(id: string) {
+    const truck = await this.trucksRepository.findOneBy({ id });
+    if (!truck) {
+      throw new NotFoundException(
+        'No se encontró el registro especificado.',
+        'notifications/truck-not-found'
+      )
+    }
+
+    const notification = new NotificationStructEntity()
+
+    switch (truck.status) {
+      case 'Libre':
+        truck.status = 'En viaje'
+        await this.trucksRepository.save(truck);
+
+        notification.title = '!Un camión ha salido del local!';
+        notification.body = `El camión ${truck.id} ha comenzado su recorrido de entrega.`;
+        
+        return await this.sendNotification(truck.operator, notification);
+      case 'En viaje de vuelta':
+        truck.status = 'Libre'
+        await this.trucksRepository.save(truck);
+
+        notification.title = '¡Un camión ha llegado al local!';
+        notification.body = `El camión ${truck.id} ha regresado de su recorrido de entrega.`;
+
+        return await this.sendNotification(truck.operator, notification);
+      default:
+        return 'Estado no definido.'
     }
   }
 

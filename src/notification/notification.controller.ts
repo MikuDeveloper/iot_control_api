@@ -34,4 +34,9 @@ export class NotificationController {
   async delete(@Param('uuid') uuid: string) {
     return await this.notificationService.deleteRegister(uuid);
   }
+
+  @Post('send')
+  async sendToTruck(@Body('id') id: string) {
+    return await this.notificationService.sendFromTruck(id);
+  }
 }
