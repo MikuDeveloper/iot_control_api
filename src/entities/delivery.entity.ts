@@ -1,5 +1,5 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
-import { IsJSON, IsNotEmpty, IsNumber, IsUUID } from 'class-validator';
+import { IsJSON, IsNotEmpty, IsString, IsUUID } from "class-validator";
 
 @Entity("deliveries")
 export class DeliveryEntity {
@@ -8,8 +8,8 @@ export class DeliveryEntity {
 
   @Column()
   @IsNotEmpty()
-  @IsNumber()
-  truck: number
+  @IsString()
+  truck: string
 
   @Column()
   @IsNotEmpty()
