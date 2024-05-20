@@ -28,7 +28,7 @@ export class DeliveryService {
     return await this.deliveryRepository.findBy({ status: 'Pendiente' });
   }
 
-  async findByTruckId(id: number) {
+  async findByTruckId(id: string) {
     return await this.deliveryRepository.findBy({ truck: id, status: 'Pendiente' });
   }
 

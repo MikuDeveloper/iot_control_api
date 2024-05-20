@@ -17,7 +17,7 @@ export class DeliveryController {
   }
 
   @Get('truck/:id')
-  async findByTruck(@Param('id') id: number) {
+  async findByTruck(@Param('id') id: string) {
     return await this.deliveryService.findByTruckId(id);
   }
 
