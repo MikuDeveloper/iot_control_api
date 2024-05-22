@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeliveryEntity } from '../entities/delivery.entity';
 import { Repository } from 'typeorm';
@@ -38,8 +38,14 @@ export class DeliveryService {
   }
 
   async updateOne(uuid: string, delivery: Partial<DeliveryEntity>) {
-    await this.findOneByUUID(uuid);
-    return await this.deliveryRepository.update({ uuid }, delivery);
+    try {
+      return await this.deliveryRepository.update({ uuid }, delivery);
+    } catch (_) {
+      throw new BadRequestException(
+        'Propiedad de pedido no encontrada.',
+        'delivery/update-error'
+      );
+    }
   }
 
   async deleteOne(uuid: string) {

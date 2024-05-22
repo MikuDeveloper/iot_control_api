@@ -23,13 +23,13 @@ export class DeliveryController {
 
   @Post()
   async createDelivery(@Body() delivery: DeliveryEntity) {
-    return this.deliveryService.createOne(delivery);
+    return await this.deliveryService.createOne(delivery);
   }
 
   @Patch('update/:uuid')
   async updateDelivery(
     @Param('uuid') uuid: string,
-    @Body() delivery: any
+    @Body() delivery: Partial<DeliveryEntity>
   ) {
     return await this.deliveryService.updateOne(uuid, delivery);
   }
