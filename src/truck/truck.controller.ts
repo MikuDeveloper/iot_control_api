@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Sse, UseGuards } from "@nestjs/common";
 import { TruckService } from './truck.service';
 import { TruckEntity } from '../entities/truck.entity';
 import { AuthorizationGuard } from '../guards/authorization/authorization.guard';
+import { interval, map, switchMap } from "rxjs";
 
 @Controller('truck')
 export class TruckController {
@@ -41,5 +42,19 @@ export class TruckController {
   @Delete(':id')
   async delete(@Param('id') id: string) {
     return await this.truckService.delete(id);
+  }
+
+  @UseGuards(AuthorizationGuard)
+  @Patch('update/:id')
+  async getLocation(@Param('id') id: string, @Body() location: Partial<TruckEntity>) {
+    return await this.truckService.updateLocation(id, location);
+  }
+
+  @Sse('streaming/:id/location')
+  async getStream(@Param('id') id: string) {
+    return interval(1000).pipe(
+      switchMap(() => this.truckService.getLocation(id)),
+      //map(data => JSON.stringify(data)));
+      map(data => ({data})));
   }
 }
