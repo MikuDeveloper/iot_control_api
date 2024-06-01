@@ -81,7 +81,7 @@ export class NotificationService {
         notification.body = `El camión ${truck.id} ha comenzado su recorrido de entrega.`;
         
         return await this.sendNotification(truck.operator, notification);
-      case 'En viaje de vuelta':
+      case 'En viaje':
         truck.status = 'Libre'
         await this.trucksRepository.save(truck);
 
