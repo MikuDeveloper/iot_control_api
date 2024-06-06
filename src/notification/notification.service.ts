@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { NotificationEntity } from '../entities/notification.entity';
 import { NotificationStructEntity } from '../entities/notification-struct.entity';
 import { TruckEntity } from '../entities/truck.entity';
+import { DeliveryEntity } from '../entities/delivery.entity';
 
 @Injectable()
 export class NotificationService {
@@ -14,6 +15,8 @@ export class NotificationService {
     private readonly notificationRepository: Repository<NotificationEntity>,
     @InjectRepository(TruckEntity)
     private readonly trucksRepository: Repository<TruckEntity>,
+    @InjectRepository(DeliveryEntity)
+    private readonly deliveryRepository: Repository<DeliveryEntity>,
   ) {}
 
   async registerOrUpdate(register: NotificationEntity): Promise<string> {
@@ -70,6 +73,15 @@ export class NotificationService {
       )
     }
 
+    const delivery = await this.deliveryRepository.findOneBy({truck:id});
+
+    if (!delivery) {
+      throw new NotFoundException(
+        'No se encontró el registro especificado.',
+        'notifications/delivery-not-found'
+      )
+    }
+
     const notification = new NotificationStructEntity()
 
     switch (truck.status) {
@@ -80,7 +92,7 @@ export class NotificationService {
         notification.title = '!Un camión ha salido del local!';
         notification.body = `El camión ${truck.id} ha comenzado su recorrido de entrega.`;
         
-        return await this.sendNotification(truck.operator, notification);
+        return await this.sendNotification(delivery.employee, notification);
       case 'En viaje':
         truck.status = 'Libre'
         await this.trucksRepository.save(truck);
@@ -88,7 +100,7 @@ export class NotificationService {
         notification.title = '¡Un camión ha llegado al local!';
         notification.body = `El camión ${truck.id} ha regresado de su recorrido de entrega.`;
 
-        return await this.sendNotification(truck.operator, notification);
+        return await this.sendNotification(delivery.employee, notification);
       default:
         return 'Estado no definido.'
     }
