@@ -89,7 +89,7 @@ export class NotificationService {
         truck.status = 'En viaje'
         await this.trucksRepository.save(truck);
 
-        notification.title = '!Un camión ha salido del local!';
+        notification.title = '¡Un camión ha salido del local!';
         notification.body = `El camión ${truck.id} ha comenzado su recorrido de entrega.`;
         
         return await this.sendNotification(delivery.employee, notification);
